@@ -7,46 +7,29 @@
 <style>
   :root { color-scheme: light; }
   * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; background: #0F1D1B; overflow: hidden; }
 
-  html, body {
-    margin: 0; padding: 0; height: 100%;
-    background: #0F1D1B; overflow: hidden;
-  }
+  /* Wordwall keeps its timer, score, menu and sound controls in all four
+     corners of the game, so the home button cannot float over it without
+     hiding one of them. It gets its own strip above the game instead. */
+  :root { --sol-bar: 60px; }
+  @media (max-width: 640px) { :root { --sol-bar: 52px; } }
 
-  /* The page is a strip on top and the game underneath it.
-     Nothing floats over the game: Wordwall puts the timer, the hearts,
-     the menu and the sound button in all four of its corners. */
-  body { display: flex; flex-direction: column; }
-
-  .sol-bar {
-    flex: 0 0 56px;
-    height: 56px;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #0F1D1B;
-  }
-
-  .sol-bar-title {
-    color: #FFFFFF;
-    font-family: "Rubik", "Arial Hebrew", Arial, sans-serif;
-    font-size: clamp(15px, 4vw, 20px);
-    font-weight: 600;
-    padding: 0 64px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  /* The game fills the screen; only the home button sits above it. */
+  #game-frame {
+    position: absolute; top: var(--sol-bar); left: 0; right: 0; bottom: 0;
+    width: 100%; height: calc(100% - var(--sol-bar));
+    border: 0; display: block;
   }
 
   /* ---------- Sol home button (unified turquoise) ---------- */
   .sol-home-btn {
-    position: absolute;
-    top: 50%;
+    position: fixed;
+    top: 4px;
     left: 12px;
-    transform: translateY(-50%);
-    width: 44px;
-    height: 44px;
+    z-index: 101;
+    width: 52px;
+    height: 52px;
     border-radius: 50%;
     background: #17A79B;
     color: #FFFFFF;
@@ -57,61 +40,37 @@
     box-shadow: 0 4px 14px rgba(18, 48, 44, 0.35);
     transition: transform 0.15s ease, box-shadow 0.15s ease;
   }
-  .sol-home-btn:hover {
-    transform: translateY(-50%) scale(1.05);
-    box-shadow: 0 8px 18px rgba(18, 48, 44, 0.45);
-  }
+  .sol-home-btn:hover { transform: translateY(-2px) scale(1.05); box-shadow: 0 8px 18px rgba(18, 48, 44, 0.45); }
   .sol-home-btn:focus-visible { outline: 3px solid #FFFFFF; outline-offset: 3px; }
-  .sol-home-btn svg { width: 24px; height: 24px; }
-
-  #game-frame {
-    flex: 1 1 auto;
-    min-height: 0;
-    width: 100%;
-    border: 0;
-    display: block;
-  }
-
+  .sol-home-btn svg { width: 26px; height: 26px; }
   @media (max-width: 640px) {
-    .sol-bar { flex-basis: 48px; height: 48px; }
-    .sol-home-btn { width: 38px; height: 38px; left: 8px; }
-    .sol-home-btn svg { width: 21px; height: 21px; }
-    .sol-bar-title { padding: 0 54px; }
+    .sol-home-btn { width: 44px; height: 44px; top: 4px; left: 8px; }
+    .sol-home-btn svg { width: 22px; height: 22px; }
   }
-
-  /* On the narrowest phones the strip carries the button only,
-     so the title can never push it or wrap. */
-  @media (max-width: 420px) {
-    .sol-bar-title { display: none; }
-  }
-
   @media (prefers-reduced-motion: reduce) {
     .sol-home-btn { transition: none; }
-    .sol-home-btn:hover { transform: translateY(-50%); }
+    .sol-home-btn:hover { transform: none; }
   }
 </style>
 </head>
 <body>
 
-<header class="sol-bar">
-  <a class="sol-home-btn" href="https://portal.smoove.io/gsbmtbnbbf1yd87kbofd1/Category?category=qqb" target="_top" aria-label="חזרה למסך הבית">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M3 11l9-8 9 8" />
-      <path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10" />
-    </svg>
-  </a>
-  <span class="sol-bar-title">בואו נטוס לתשובה הנכונה</span>
-</header>
-
 <!-- sandbox without allow-popups and without allow-top-navigation:
-     Wordwall's own "open on wordwall.net" button used to throw the child
-     into a new tab with no history and no way back. Now it does nothing
-     and the child stays here, with the home button still on screen. -->
+     Wordwall's own button opens the game on wordwall.net in a new tab.
+     A new tab has no history, so back does not return either and the home
+     button is not there, which is the dead end this wrapper exists to prevent. -->
 <iframe id="game-frame"
         src="https://wordwall.net/he/embed/1c312a6ac8964ad08f7fec588962efc6?themeId=46&amp;templateId=48&amp;fontStackId=0"
         title="בואו נטוס לתשובה הנכונה"
         sandbox="allow-scripts allow-same-origin allow-forms"
         allow="autoplay; fullscreen"></iframe>
+
+<a class="sol-home-btn" href="https://portal.smoove.io/gsbmtbnbbf1yd87kbofd1/Category?category=qqb" target="_top" aria-label="חזרה למסך הבית">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M3 11l9-8 9 8" />
+    <path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10" />
+  </svg>
+</a>
 
 </body>
 </html>
